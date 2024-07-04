@@ -1,5 +1,6 @@
 @page "/Anagrafica"
 @page "/Anagrafica/{DoctorId:int?}"
+@using Delta_Dent.WebService
 @inject IJSRuntime Js
 <PageTitle>Anagrafica</PageTitle>
 @rendermode InteractiveServer
@@ -596,17 +597,60 @@
         TogglePatientForm();
     }
 
-    /// <summary>
-    /// Saves a new patient to the database.
-    /// </summary>
-    /// <param name="newPatient">The new patient to save.</param>
     public async Task SavePatient(Patient newPatient)
     {
-        if (!await _db.SavePatientInDb(newPatient))
+        try
         {
-            _showFormError = true;
-            return;
+            // Define the binding and endpoint address
+            var binding = new System.ServiceModel.BasicHttpsBinding();
+            var endpoint = new System.ServiceModel.EndpointAddress("https://localhost:44308/WebService.asmx");
+
+            // Instantiate the client with the binding and endpoint
+            var webServiceClient = new WebServiceSoapClient(binding, endpoint);
+
+            // Call the SavePatientAsync method
+            var result = await webServiceClient.SavePatientAsync(
+                newPatient.FirstName,
+                newPatient.Surname,
+                _genderString,
+                newPatient.Telephone,
+                newPatient.CF,
+                newPatient.CASL,
+                newPatient.BirthDate,
+                newPatient.BirthPlace,
+                newPatient.BirthProvince,
+                newPatient.Foreigner,
+                newPatient.Billable,
+                newPatient.Completed,
+                newPatient.Documented,
+                newPatient.DoctorID,
+                newPatient.Locked
+            );
+
         }
+        catch (Exception ex)
+        {
+            // Gestione delle eccezioni
+            Console.WriteLine("Errore durante il salvataggio del paziente: " + ex.Message + ex);
+            _showFormError = true;
+        }
+    }
+
+    /*
+    public async Task SavePatient(Patient newPatient)
+    {
+        // if (!await _db.SavePatientInDb(newPatient))
+        // {
+        //     _showFormError = true;
+        //     return;
+        // }
+
+
+        var webServiceClient = new Delta_Dent.WebService.WebServiceSoapClient();
+
+        webServiceClient.SavePatient(newPatient.FirstName, newPatient.Surname, _genderString, newPatient.Telephone, newPatient.CF,
+            newPatient.CASL, newPatient.BirthDate, newPatient.BirthPlace, newPatient.BirthProvince, newPatient.Foreigner, newPatient.Billable,
+            newPatient.Completed, newPatient.Documented, newPatient.DoctorID, newPatient.Locked);
 
         _patientsList.Add(newPatient);
 
@@ -616,6 +660,7 @@
         // pulisco
         ClearText();
     }
+     */
 
     /// <summary>
     /// Updates an existing patient in the database.

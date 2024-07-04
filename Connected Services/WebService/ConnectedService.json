@@ -1,0 +1,14 @@
+{
+  "providerId": "Microsoft.Tools.ServiceModel.Svcutil",
+  "version": "2.1.0",
+  "ExtendedData": {
+    "inputs": [
+      "https://localhost:44308/WebService.asmx"
+    ],
+    "namespaceMappings": [
+      "*, Delta-Dent.WebService"
+    ],
+    "outputFile": "WebService",
+    "typeReuseMode": "All"
+  }
+}
